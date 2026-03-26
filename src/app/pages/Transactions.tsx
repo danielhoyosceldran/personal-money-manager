@@ -1,45 +1,59 @@
+import { useState, useMemo, useEffect } from 'react';
+import { useEntries } from '../../hooks/useEntries';
+import { currentMonth, centsToDisplay, formatDate } from '../../utils/formatters';
+import type { EntryDetail } from '../../types';
 import styles from './Transactions.module.scss';
 
-const mockTransactions = [
-  {
-    date: "Monday 23",
-    items: [
-      { id: 1, title: "Compra", category: "Menjar/Supermercat", amount: -43.21 },
-      { id: 2, title: "Copa de vi", category: "Menjar/Prendre algo", amount: -3.00 },
-      { id: 3, title: "Bus Jaén", category: "Transport/Públic", amount: -9.99 },
-    ],
-  },
-  {
-    date: "Sunday 22",
-    items: [
-      { id: 4, title: "Compra verdures", category: "Menjar/Sup...", amount: -2.65 },
-    ],
-  },
-];
-
 export function Transactions() {
+  const [month] = useState(() => currentMonth());
+  const { entries, balance, loading, reloadEntries } = useEntries(month);
+
+  useEffect(() => {
+    const handler = () => void reloadEntries();
+    window.addEventListener('transaction-saved', handler);
+    return () => window.removeEventListener('transaction-saved', handler);
+  }, [reloadEntries]);
+
+  const grouped = useMemo(() => {
+    const map = new Map<string, EntryDetail[]>();
+    entries.forEach(e => {
+      const list = map.get(e.date) ?? [];
+      list.push(e);
+      map.set(e.date, list);
+    });
+    return Array.from(map.entries()).map(([date, items]) => ({ date, items }));
+  }, [entries]);
+
   return (
     <div className={`${styles.page} animate-in fade-in duration-300`}>
       <div className={styles.balance}>
-        <h1 className={styles.balanceAmount}>-2130</h1>
+        <h1 className={styles.balanceAmount}>{centsToDisplay(balance.net)}</h1>
         <div className={styles.balanceRange}>
-          <span>0</span>
-          <span>-2130</span>
+          <span>+{centsToDisplay(balance.totalIncome)}</span>
+          <span>-{centsToDisplay(balance.totalExpense)}</span>
         </div>
       </div>
 
       <div className={styles.list}>
-        {mockTransactions.map((group) => (
-          <div key={group.date} className={styles.group}>
-            <h2 className={styles.groupDate}>{group.date}</h2>
+        {loading && (
+          <p style={{ textAlign: 'center', padding: '2rem', color: 'var(--muted)' }}>Loading...</p>
+        )}
+        {!loading && grouped.length === 0 && (
+          <p style={{ textAlign: 'center', padding: '2rem', color: 'var(--muted)' }}>No transactions this month</p>
+        )}
+        {grouped.map(({ date, items }) => (
+          <div key={date} className={styles.group}>
+            <h2 className={styles.groupDate}>{formatDate(date)}</h2>
             <div className={styles.groupItems}>
-              {group.items.map((item) => (
+              {items.map((item) => (
                 <div key={item.id} className={styles.transaction}>
                   <div className={styles.transactionInfo}>
-                    <span className={styles.transactionTitle}>{item.title}</span>
-                    <span className={styles.transactionCategory}>{item.category}</span>
+                    <span className={styles.transactionTitle}>{item.description || item.subcategoryName}</span>
+                    <span className={styles.transactionCategory}>{item.categoryName} / {item.subcategoryName}</span>
                   </div>
-                  <span className={styles.transactionAmount}>{item.amount.toFixed(2)}</span>
+                  <span className={styles.transactionAmount}>
+                    {item.type === 'expense' ? '-' : '+'}{centsToDisplay(item.amount)}
+                  </span>
                 </div>
               ))}
             </div>

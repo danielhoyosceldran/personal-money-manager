@@ -1,6 +1,7 @@
 import { useState, useRef, useCallback, useEffect } from "react";
 import { Outlet, useNavigate, useLocation } from "react-router";
 import { AddSheet } from "../components/AddSheet";
+import { AddAccountSheet } from "../components/AddAccountSheet";
 import { TrendSheet } from "../components/TrendSheet";
 import { GestureZone } from "../components/GestureZone";
 import styles from './MainLayout.module.scss';
@@ -13,6 +14,7 @@ const ROUTES = ['/', '/stats', '/accounts', '/settings'];
 export function MainLayout() {
   const [isAddOpen, setIsAddOpen] = useState(false);
   const [isTrendOpen, setIsTrendOpen] = useState(false);
+  const [isAddAccountOpen, setIsAddAccountOpen] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -26,7 +28,7 @@ export function MainLayout() {
 
   // Keep refs in sync with latest values so touch handlers never go stale
   useEffect(() => { currentIndexRef.current = ROUTES.indexOf(location.pathname); }, [location.pathname]);
-  useEffect(() => { isAnySheetOpenRef.current = isAddOpen || isTrendOpen; }, [isAddOpen, isTrendOpen]);
+  useEffect(() => { isAnySheetOpenRef.current = isAddOpen || isTrendOpen || isAddAccountOpen; }, [isAddOpen, isTrendOpen, isAddAccountOpen]);
   useEffect(() => { navigateRef.current = navigate; }, [navigate]);
 
   // Reset transform when the route changes (new page rendered after navigation)
@@ -123,12 +125,13 @@ export function MainLayout() {
     };
   }, []); // Empty deps — changing values accessed via refs
 
-  const showGestureZone = location.pathname === '/' || location.pathname === '/stats';
-  const gestureLabel = location.pathname === '/stats' ? 'View trend' : 'Add transaction';
+  const showGestureZone = location.pathname === '/' || location.pathname === '/stats' || location.pathname === '/accounts';
+  const gestureLabel = location.pathname === '/stats' ? 'View trend' : location.pathname === '/accounts' ? 'Add account' : 'Add transaction';
 
   const handleGestureAction = useCallback(() => {
     if (location.pathname === '/') setIsAddOpen(true);
     else if (location.pathname === '/stats') setIsTrendOpen(true);
+    else if (location.pathname === '/accounts') setIsAddAccountOpen(true);
   }, [location.pathname]);
 
   return (
@@ -142,6 +145,7 @@ export function MainLayout() {
       )}
 
       <AddSheet isOpen={isAddOpen} onClose={() => setIsAddOpen(false)} />
+      <AddAccountSheet isOpen={isAddAccountOpen} onClose={() => setIsAddAccountOpen(false)} />
       <TrendSheet isOpen={isTrendOpen} onClose={() => setIsTrendOpen(false)} />
     </div>
   );

@@ -1,15 +1,50 @@
-import { useNavigate } from "react-router";
-import { X, Calendar, Tag, CreditCard, Type, AlignLeft } from "lucide-react";
 import { useState } from "react";
+import { useNavigate } from "react-router";
+import { X, Calendar, Tag, CreditCard, Type } from "lucide-react";
+import { useCategories } from '../../hooks/useCategories';
+import { useSubcategories } from '../../hooks/useSubcategories';
+import { usePaymentMethods } from '../../hooks/usePaymentMethods';
+import { entriesService } from '../../services/db/entriesService';
+import { toCents } from '../../utils/formatters';
+import type { EntryType } from '../../types';
 import styles from './AddTransaction.module.scss';
 
 export function AddTransaction() {
   const navigate = useNavigate();
-  const [amount, setAmount] = useState("");
+  const [type, setType] = useState<EntryType>('expense');
+  const [amount, setAmount] = useState('');
+  const [description, setDescription] = useState('');
+  const [date, setDate] = useState(() => new Date().toISOString().split('T')[0]);
+  const [categoryId, setCategoryId] = useState('');
+  const [subcategoryId, setSubcategoryId] = useState('');
+  const [paymentMethodId, setPaymentMethodId] = useState('');
 
-  const handleSave = (e: React.FormEvent) => {
-    e.preventDefault();
-    navigate("/");
+  const { categories } = useCategories(type);
+  const { subcategories } = useSubcategories(categoryId || null);
+  const { paymentMethods } = usePaymentMethods();
+
+  const handleTypeChange = (t: EntryType) => {
+    setType(t);
+    setCategoryId('');
+    setSubcategoryId('');
+  };
+
+  const handleCategoryChange = (id: string) => {
+    setCategoryId(id);
+    setSubcategoryId('');
+  };
+
+  const doSave = async () => {
+    if (!subcategoryId || !paymentMethodId || !amount) return;
+    await entriesService.create({
+      type,
+      amount: toCents(parseFloat(amount)),
+      description,
+      subcategoryId,
+      paymentMethodId,
+      date,
+    });
+    navigate('/');
   };
 
   return (
@@ -23,13 +58,13 @@ export function AddTransaction() {
           <X size={24} color="#060606" />
         </button>
         <h1 className={styles.title}>New Transaction</h1>
-        <button onClick={handleSave} className={styles.saveBtn}>
+        <button type="button" onClick={() => void doSave()} className={styles.saveBtn}>
           Save
         </button>
       </header>
 
       <main className={styles.main}>
-        <form onSubmit={handleSave} className={styles.form}>
+        <form onSubmit={(e) => { e.preventDefault(); void doSave(); }} className={styles.form}>
           <div className={styles.amountSection}>
             <div className={styles.amountWrapper}>
               <span className={styles.currency}>€</span>
@@ -45,8 +80,20 @@ export function AddTransaction() {
               />
             </div>
             <div className={styles.typeToggle}>
-              <button type="button" className={`${styles.typeBtn} ${styles.typeBtnActive}`}>Expense</button>
-              <button type="button" className={styles.typeBtn}>Income</button>
+              <button
+                type="button"
+                className={`${styles.typeBtn} ${type === 'expense' ? styles.typeBtnActive : ''}`}
+                onClick={() => handleTypeChange('expense')}
+              >
+                Expense
+              </button>
+              <button
+                type="button"
+                className={`${styles.typeBtn} ${type === 'income' ? styles.typeBtnActive : ''}`}
+                onClick={() => handleTypeChange('income')}
+              >
+                Income
+              </button>
             </div>
           </div>
 
@@ -57,8 +104,9 @@ export function AddTransaction() {
               </div>
               <input
                 type="text"
-                placeholder="Title"
-                required
+                placeholder="Description"
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
                 className={styles.fieldInput}
               />
             </div>
@@ -68,9 +116,10 @@ export function AddTransaction() {
                 <Calendar size={20} color="#060606" />
               </div>
               <input
-                type="datetime-local"
+                type="date"
+                value={date}
+                onChange={(e) => setDate(e.target.value)}
                 required
-                defaultValue={new Date().toISOString().slice(0, 16)}
                 className={styles.fieldInput}
               />
             </div>
@@ -82,7 +131,17 @@ export function AddTransaction() {
                 </div>
                 <div className={styles.fieldMeta}>
                   <span className={styles.fieldMetaLabel}>Category</span>
-                  <span className={styles.fieldMetaValue}>Select...</span>
+                  <select
+                    value={categoryId}
+                    onChange={(e) => handleCategoryChange(e.target.value)}
+                    className={styles.fieldSelect}
+                    required
+                  >
+                    <option value="">Select...</option>
+                    {categories.map(c => (
+                      <option key={c.id} value={c.id}>{c.name}</option>
+                    ))}
+                  </select>
                 </div>
               </div>
 
@@ -92,21 +151,42 @@ export function AddTransaction() {
                 </div>
                 <div className={styles.fieldMeta}>
                   <span className={styles.fieldMetaLabel}>Account</span>
-                  <span className={styles.fieldMetaValue}>Cash</span>
+                  <select
+                    value={paymentMethodId}
+                    onChange={(e) => setPaymentMethodId(e.target.value)}
+                    className={styles.fieldSelect}
+                    required
+                  >
+                    <option value="">Select...</option>
+                    {paymentMethods.map(pm => (
+                      <option key={pm.id} value={pm.id}>{pm.name}</option>
+                    ))}
+                  </select>
                 </div>
               </div>
             </div>
 
-            <div className={`${styles.fieldRow} ${styles.fieldRowTop}`}>
-              <div className={styles.fieldIcon} style={{ background: '#EAEAEA', marginTop: '0.25rem' }}>
-                <AlignLeft size={20} color="#060606" />
+            {categoryId && (
+              <div className={styles.fieldRow}>
+                <div className={styles.fieldIcon} style={{ background: 'rgba(243, 179, 172, 0.3)' }}>
+                  <Tag size={20} color="#060606" />
+                </div>
+                <div className={styles.fieldMeta}>
+                  <span className={styles.fieldMetaLabel}>Subcategory</span>
+                  <select
+                    value={subcategoryId}
+                    onChange={(e) => setSubcategoryId(e.target.value)}
+                    className={styles.fieldSelect}
+                    required
+                  >
+                    <option value="">Select...</option>
+                    {subcategories.map(s => (
+                      <option key={s.id} value={s.id}>{s.name}</option>
+                    ))}
+                  </select>
+                </div>
               </div>
-              <textarea
-                placeholder="Description (optional)"
-                rows={3}
-                className={styles.fieldTextarea}
-              />
-            </div>
+            )}
           </div>
         </form>
       </main>

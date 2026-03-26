@@ -218,3 +218,17 @@
 
   &::placeholder { color: $muted; }
 }
+
+.fieldSelect {
+  background: transparent;
+  border: none;
+  outline: none;
+  font-size: 1.125rem;
+  font-weight: 500;
+  color: $fg;
+  width: 100%;
+  cursor: pointer;
+  font-family: inherit;
+
+  option { background: $surface; color: $fg; }
+}

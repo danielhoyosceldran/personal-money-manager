@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { ChevronRight, Moon, Sun, X } from "lucide-react";
+import { useSettings } from '../../hooks/useSettings';
 import styles from './Settings.module.scss';
 
 export function Settings() {
@@ -7,6 +8,7 @@ export function Settings() {
   const [isDarkMode, setIsDarkMode] = useState(
     document.documentElement.classList.contains('dark')
   );
+  const { settings } = useSettings();
 
   const toggleTheme = () => {
     const next = !isDarkMode;
@@ -19,8 +21,8 @@ export function Settings() {
     {
       title: "Preferences",
       items: [
-        { id: "currency", label: "Currency", value: "EUR (€)" },
-        { id: "startMonth", label: "Start day of month", value: "1st" },
+        { id: "currency", label: "Currency", value: settings.currency ?? 'EUR' },
+        { id: "startMonth", label: "Start day of month", value: settings.start_of_month ?? '1' },
         { id: "startWeek", label: "Start day of week", value: "Monday" },
         { id: "language", label: "Language", value: "English" },
         { id: "initialPage", label: "Initial page", value: "Transactions" },
