@@ -1,0 +1,220 @@
+@use '../../styles/variables' as *;
+
+.page {
+  min-height: 100dvh;
+  background: $bg;
+  color: $fg;
+  font-family: $font-sans;
+  margin: 0 auto;
+  width: 100%;
+  max-width: $max-width;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.12);
+}
+
+.header {
+  padding: 3rem 1.5rem 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: sticky;
+  top: 0;
+  background: $bg;
+  z-index: 10;
+}
+
+.backBtn {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  background: $fg2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  cursor: pointer;
+  transition: opacity 0.15s;
+
+  &:hover { opacity: 0.7; }
+  &:active { transform: scale(0.95); }
+}
+
+.title {
+  font-size: 1.25rem;
+  font-weight: 500;
+}
+
+.saveBtn {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: $fg;
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: opacity 0.15s;
+
+  &:hover { opacity: 0.7; }
+  &:active { transform: scale(0.95); }
+}
+
+.main {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0 1.5rem 6rem;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.amountSection {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 0;
+}
+
+.amountWrapper {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+}
+
+.currency {
+  font-size: 2.25rem;
+  color: $muted;
+  font-weight: 300;
+}
+
+.amountInput {
+  font-size: 4rem;
+  font-weight: 700;
+  color: $fg;
+  background: transparent;
+  outline: none;
+  border: none;
+  width: 100%;
+  text-align: center;
+
+  &::placeholder { color: $fg2; }
+}
+
+.typeToggle {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1.5rem;
+  background: $fg2;
+  border-radius: 9999px;
+  padding: 0.25rem;
+}
+
+.typeBtn {
+  padding: 0.5rem 1.5rem;
+  border-radius: 9999px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  border: none;
+  cursor: pointer;
+  color: $muted;
+  background: transparent;
+}
+
+.typeBtnActive {
+  background: $surface;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  color: $fg;
+}
+
+.fields {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.fieldRow {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  background: $surface;
+  padding: 1rem;
+  border-radius: 1rem;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+}
+
+.fieldRowTop { align-items: flex-start; }
+
+.fieldIcon {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.fieldInput {
+  width: 100%;
+  background: transparent;
+  font-size: 1.125rem;
+  outline: none;
+  border: none;
+
+  &::placeholder { color: $muted; }
+}
+
+.fieldGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+}
+
+.fieldGridItem {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  background: $surface;
+  padding: 1rem;
+  border-radius: 1rem;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+  cursor: pointer;
+  transition: opacity 0.15s;
+
+  &:active { transform: scale(0.97); }
+}
+
+.fieldMeta {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.fieldMetaLabel {
+  font-size: 0.875rem;
+  color: $muted;
+}
+
+.fieldMetaValue {
+  font-size: 1.125rem;
+  font-weight: 500;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.fieldTextarea {
+  width: 100%;
+  background: transparent;
+  font-size: 1.125rem;
+  outline: none;
+  border: none;
+  resize: none;
+  padding-top: 0.5rem;
+  font-family: inherit;
+
+  &::placeholder { color: $muted; }
+}

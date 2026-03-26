@@ -1,0 +1,254 @@
+@use '../../styles/variables' as *;
+
+.backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.25);
+  z-index: 40;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+
+  &.visible {
+    opacity: 1;
+    pointer-events: auto;
+  }
+}
+
+.sheet {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: calc(100% - 5rem);
+  background: $bg;
+  border-radius: 1.5rem 1.5rem 0 0;
+  z-index: 55;
+  transform: translateY(100%);
+  transition: transform 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  flex-direction: column;
+
+  &.open { transform: translateY(0); }
+}
+
+.handle {
+  display: flex;
+  justify-content: center;
+  padding: 0.75rem 0 0.25rem;
+  flex-shrink: 0;
+
+  &::after {
+    content: '';
+    width: 2.5rem;
+    height: 0.25rem;
+    background: $fg2;
+    border-radius: 9999px;
+  }
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 1.5rem 1rem;
+  flex-shrink: 0;
+}
+
+.title {
+  font-size: 1.25rem;
+  font-weight: 500;
+  color: $fg;
+}
+
+.closeBtn {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  background: $fg2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  cursor: pointer;
+  transition: opacity 0.15s;
+
+  &:active { transform: scale(0.9); }
+}
+
+.content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0 1.5rem 2rem;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.amountSection {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 1rem 0 1.5rem;
+}
+
+.amountWrapper {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+}
+
+.currency {
+  font-size: 2.25rem;
+  color: $muted;
+  font-weight: 300;
+}
+
+.amountInput {
+  font-size: 4rem;
+  font-weight: 700;
+  color: $fg;
+  background: transparent;
+  outline: none;
+  border: none;
+  width: 100%;
+  text-align: center;
+
+  &::placeholder { color: $fg2; }
+}
+
+.typeToggle {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1rem;
+  background: $fg2;
+  border-radius: 9999px;
+  padding: 0.25rem;
+}
+
+.typeBtn {
+  padding: 0.5rem 1.5rem;
+  border-radius: 9999px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  border: none;
+  cursor: pointer;
+  color: $muted;
+  background: transparent;
+}
+
+.typeBtnActive {
+  background: $surface;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  color: $fg;
+}
+
+.fields {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.fieldRow {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  background: $surface;
+  padding: 1rem;
+  border-radius: 1rem;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+}
+
+.fieldRowTop { align-items: flex-start; }
+
+.fieldIcon {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.fieldInput {
+  width: 100%;
+  background: transparent;
+  font-size: 1.125rem;
+  outline: none;
+  border: none;
+
+  &::placeholder { color: $muted; }
+}
+
+.fieldGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+}
+
+.fieldGridItem {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  background: $surface;
+  padding: 1rem;
+  border-radius: 1rem;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+  cursor: pointer;
+  transition: opacity 0.15s;
+
+  &:active { transform: scale(0.97); }
+}
+
+.fieldMeta {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.fieldMetaLabel {
+  font-size: 0.875rem;
+  color: $muted;
+}
+
+.fieldMetaValue {
+  font-size: 1.125rem;
+  font-weight: 500;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.fieldTextarea {
+  width: 100%;
+  background: transparent;
+  font-size: 1.125rem;
+  outline: none;
+  border: none;
+  resize: none;
+  padding-top: 0.5rem;
+  font-family: inherit;
+
+  &::placeholder { color: $muted; }
+}
+
+.saveBtn {
+  margin-top: 0.5rem;
+  background: $fg;
+  color: $bg;
+  padding: 1rem;
+  border-radius: 9999px;
+  font-weight: 600;
+  font-size: 1.125rem;
+  width: 100%;
+  border: none;
+  cursor: pointer;
+  transition: opacity 0.15s;
+
+  &:hover { opacity: 0.85; }
+  &:active { transform: scale(0.98); }
+}

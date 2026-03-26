@@ -1,0 +1,198 @@
+@use '../../styles/variables' as *;
+
+.page {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding-bottom: 5rem;
+}
+
+.themeRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.5rem 0;
+}
+
+.themeLabel {
+  font-size: 1.25rem;
+  font-weight: 500;
+  color: $fg;
+}
+
+.themeSwitch {
+  width: 3.5rem;
+  height: 2rem;
+  background: $fg2;
+  border-radius: 9999px;
+  padding: 0.25rem;
+  position: relative;
+  border: none;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.themeSwitchKnob {
+  width: 1.5rem;
+  height: 1.5rem;
+  background: $surface;
+  border-radius: 50%;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.3s;
+}
+
+.themeSwitchKnobActive {
+  transform: translateX(1.5rem);
+  background: $fg;
+}
+
+.groups {
+  display: flex;
+  flex-direction: column;
+  gap: 2.5rem;
+  margin-top: 1rem;
+}
+
+.groupTitle {
+  color: $muted;
+  font-size: 0.75rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 1rem;
+}
+
+.groupItems {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.settingBtn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  transition: opacity 0.15s;
+
+  &:active { opacity: 0.7; }
+}
+
+.settingLabel {
+  font-size: 1.25rem;
+  color: $fg;
+  font-weight: 500;
+}
+
+.settingRight {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.settingValue {
+  font-size: 1.125rem;
+  color: $muted;
+}
+
+.dialogOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(4px);
+
+  @media (min-width: 640px) { align-items: center; }
+}
+
+.dialogPanel {
+  background: $bg;
+  width: 100%;
+  max-width: $max-width;
+  border-radius: 1.5rem 1.5rem 0 0;
+  padding: 1.5rem;
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.25);
+
+  @media (min-width: 640px) { border-radius: 1.5rem; }
+}
+
+.dialogHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.dialogTitle {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: $fg;
+  text-transform: capitalize;
+}
+
+.dialogClose {
+  padding: 0.5rem;
+  border-radius: 50%;
+  background: none;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s;
+
+  &:hover { background: $fg2; }
+}
+
+.dialogBody {
+  min-height: 200px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+.dialogIcon {
+  width: 4rem;
+  height: 4rem;
+  background: $fg2;
+  border-radius: 50%;
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+}
+
+.dialogText {
+  color: $muted;
+  font-size: 1.125rem;
+}
+
+.dialogDone {
+  margin-top: 2rem;
+  background: $fg;
+  color: $bg;
+  padding: 1rem 2rem;
+  border-radius: 9999px;
+  font-weight: 500;
+  font-size: 1.125rem;
+  width: 100%;
+  border: none;
+  cursor: pointer;
+  transition: opacity 0.15s;
+
+  &:hover { opacity: 0.85; }
+  &:active { transform: scale(0.98); }
+}

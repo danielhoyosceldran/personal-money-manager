@@ -1,0 +1,134 @@
+@use '../../styles/variables' as *;
+
+.page {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.months {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 2.5rem;
+  overflow-x: auto;
+  font-size: 1.125rem;
+  padding-bottom: 0.5rem;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar { display: none; }
+}
+
+.monthInactive {
+  color: $muted;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.monthActive {
+  font-weight: 500;
+  color: $fg;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.viewToggle {
+  display: flex;
+  background: $fg2;
+  border-radius: 9999px;
+  padding: 0.25rem;
+  margin-bottom: 2rem;
+}
+
+.toggleBtn {
+  flex: 1;
+  border-radius: 9999px;
+  padding: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: $muted;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: color 0.15s;
+}
+
+.toggleBtnActive {
+  background: $surface;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  color: $fg;
+}
+
+.chartContainer {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.categoryList {
+  margin-top: 2rem;
+}
+
+.categoryTitle {
+  color: $muted;
+  font-size: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.categoryItems {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.categoryRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.categoryName {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 1.125rem;
+  color: $fg;
+}
+
+.categoryDot {
+  width: 0.75rem;
+  height: 0.75rem;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.categoryAmount {
+  font-size: 1.125rem;
+  color: $fg;
+}
+
+.trendControls {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.trendBtn {
+  font-size: 0.875rem;
+  color: $muted;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+}
+
+.trendBtnActive {
+  font-weight: 700;
+  color: $fg;
+}
+
+.trendChart {
+  width: 100%;
+  margin-top: 1rem;
+}

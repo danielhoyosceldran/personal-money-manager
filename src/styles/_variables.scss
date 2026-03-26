@@ -1,0 +1,11 @@
+// ─── SCSS aliases (CSS custom properties defined in theme.css) ───────────────
+$bg:      var(--background);
+$fg:      var(--foreground);
+$muted:   var(--muted);
+$fg2:     var(--fg2);
+$surface: var(--surface);
+$accent:  var(--accent);
+
+// ─── Layout ───────────────────────────────────────────────────────────────────
+$max-width: 448px;
+$font-sans: ui-sans-serif, system-ui, -apple-system, sans-serif;
