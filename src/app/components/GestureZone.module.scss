@@ -1,0 +1,27 @@
+@use '../../styles/variables' as *;
+
+.zone {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  cursor: pointer;
+  z-index: 10;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: none;
+}
+
+.label {
+  font-size: 0.7rem;
+  color: $muted;
+  opacity: 0.45;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}

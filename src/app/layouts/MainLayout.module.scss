@@ -4,7 +4,7 @@
   height: 100dvh;
   background: $bg;
   color: $fg;
-  font-family: $font-sans;
+
   margin: 0 auto;
   width: 100%;
   max-width: $max-width;
@@ -13,10 +13,12 @@
   display: flex;
   flex-direction: column;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.12);
+
+  touch-action: pan-y;
 }
 
 .main {
   flex: 1;
   overflow-y: auto;
-  padding: 3rem 1.5rem 7rem;
+  padding: 3rem 1.5rem 5rem;
 }

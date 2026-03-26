@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router";
-import { X, Calendar, DollarSign, Tag, CreditCard, Type, AlignLeft } from "lucide-react";
+import { X, Calendar, Tag, CreditCard, Type, AlignLeft } from "lucide-react";
 import { useState } from "react";
 import styles from './AddTransaction.module.scss';
 

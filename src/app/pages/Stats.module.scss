@@ -31,33 +31,6 @@
   white-space: nowrap;
 }
 
-.viewToggle {
-  display: flex;
-  background: $fg2;
-  border-radius: 9999px;
-  padding: 0.25rem;
-  margin-bottom: 2rem;
-}
-
-.toggleBtn {
-  flex: 1;
-  border-radius: 9999px;
-  padding: 0.5rem;
-  font-size: 0.875rem;
-  font-weight: 500;
-  color: $muted;
-  background: transparent;
-  border: none;
-  cursor: pointer;
-  transition: color 0.15s;
-}
-
-.toggleBtnActive {
-  background: $surface;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  color: $fg;
-}
-
 .chartContainer {
   width: 100%;
   display: flex;
@@ -105,30 +78,4 @@
 .categoryAmount {
   font-size: 1.125rem;
   color: $fg;
-}
-
-.trendControls {
-  display: flex;
-  justify-content: flex-end;
-  gap: 1rem;
-  margin-bottom: 1rem;
-}
-
-.trendBtn {
-  font-size: 0.875rem;
-  color: $muted;
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 0;
-}
-
-.trendBtnActive {
-  font-weight: 700;
-  color: $fg;
-}
-
-.trendChart {
-  width: 100%;
-  margin-top: 1rem;
 }
