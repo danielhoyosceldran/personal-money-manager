@@ -36,8 +36,8 @@ const INITIAL_SETUP_QUERIES = `
     FOREIGN KEY(category_id) REFERENCES categories(id) ON DELETE CASCADE
   );
 
-  -- 4. MÉTODOS DE PAGO (Cuentas)
-  CREATE TABLE IF NOT EXISTS payment_methods (
+  -- 4. CUENTAS (Métodos de pago)
+  CREATE TABLE IF NOT EXISTS accounts (
     id TEXT PRIMARY KEY,
     name TEXT NOT NULL,
     type TEXT NOT NULL,
@@ -62,18 +62,27 @@ const INITIAL_SETUP_QUERIES = `
     created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY(subcategory_id) REFERENCES subcategories(id) ON DELETE RESTRICT,
-    FOREIGN KEY(payment_method_id) REFERENCES payment_methods(id) ON DELETE RESTRICT
+    FOREIGN KEY(payment_method_id) REFERENCES accounts(id) ON DELETE RESTRICT
   );
 `;
 
 const runMigrations = async (dbConn: SQLiteDBConnection) => {
+  // Migration: rename payment_methods to accounts (existing DBs).
+  // Must run before INITIAL_SETUP_QUERIES so the CREATE TABLE IF NOT EXISTS accounts
+  // below is a no-op on existing databases after the rename succeeds.
+  try {
+    await dbConn.execute(`ALTER TABLE payment_methods RENAME TO accounts`);
+  } catch {
+    // Table already renamed or doesn't exist (fresh install) — ignore.
+  }
+
   await dbConn.execute(INITIAL_SETUP_QUERIES);
 
-  // Migration: add description column to payment_methods (safe for existing DBs)
+  // Migration: add description column to accounts (safe for existing DBs)
   try {
-    await dbConn.execute(`ALTER TABLE payment_methods ADD COLUMN description TEXT NOT NULL DEFAULT ''`);
+    await dbConn.execute(`ALTER TABLE accounts ADD COLUMN description TEXT NOT NULL DEFAULT ''`);
   } catch {
-    // Column already exists, ignore
+    // Column already exists (fresh install includes it in CREATE TABLE), ignore
   }
 
   // Insertamos los ajustes iniciales con las columnas correctas ('key' y 'value')

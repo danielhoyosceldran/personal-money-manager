@@ -1,0 +1,37 @@
+@use '../styles/variables' as *;
+
+.container {
+  position: fixed;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  z-index: 9999;
+  pointer-events: none;
+  width: max-content;
+  max-width: calc(#{$max-width} - 2rem);
+}
+
+.toast {
+  padding: 0.5rem 1.25rem;
+  border-radius: 9999px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  white-space: nowrap;
+  opacity: 1;
+  transition: opacity 0.4s ease;
+  pointer-events: auto;
+  background: $fg;
+  color: $bg;
+
+  &.success { box-shadow: 0 0 0 2px var(--success); }
+  &.error   { box-shadow: 0 0 0 2px var(--danger); }
+  &.info    { box-shadow: 0 0 0 2px var(--accent); }
+
+  &.exit {
+    opacity: 0;
+  }
+}

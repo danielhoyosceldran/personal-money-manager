@@ -1,9 +1,12 @@
 import { useState, useRef, useCallback, useEffect } from "react";
 import { Outlet, useNavigate, useLocation } from "react-router";
 import { AddSheet } from "../components/AddSheet";
-import { AddAccountSheet } from "../components/AddAccountSheet";
 import { TrendSheet } from "../components/TrendSheet";
 import { GestureZone } from "../components/GestureZone";
+import { paymentMethodsService } from '../../services/db/paymentMethodsService';
+import { categoriesService } from '../../services/db/categoriesService';
+import { useToast } from '../../context/ToastContext';
+import type { EntryDetail } from '../../types';
 import styles from './MainLayout.module.scss';
 
 // nav swap threshold — percentage of screen width to trigger navigation (0–1)
@@ -13,10 +16,11 @@ const ROUTES = ['/', '/stats', '/accounts', '/settings'];
 
 export function MainLayout() {
   const [isAddOpen, setIsAddOpen] = useState(false);
+  const [editingEntry, setEditingEntry] = useState<EntryDetail | undefined>(undefined);
   const [isTrendOpen, setIsTrendOpen] = useState(false);
-  const [isAddAccountOpen, setIsAddAccountOpen] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
+  const { showToast } = useToast();
 
   const shellRef = useRef<HTMLDivElement>(null);
   const mainRef = useRef<HTMLDivElement>(null);
@@ -26,9 +30,19 @@ export function MainLayout() {
   const isAnySheetOpenRef = useRef(false);
   const navigateRef = useRef(navigate);
 
+  // Open AddSheet in edit mode when a transaction row is tapped
+  useEffect(() => {
+    const handler = (e: Event) => {
+      setEditingEntry((e as CustomEvent<EntryDetail>).detail);
+      setIsAddOpen(true);
+    };
+    window.addEventListener('open-edit-transaction', handler);
+    return () => window.removeEventListener('open-edit-transaction', handler);
+  }, []);
+
   // Keep refs in sync with latest values so touch handlers never go stale
   useEffect(() => { currentIndexRef.current = ROUTES.indexOf(location.pathname); }, [location.pathname]);
-  useEffect(() => { isAnySheetOpenRef.current = isAddOpen || isTrendOpen || isAddAccountOpen; }, [isAddOpen, isTrendOpen, isAddAccountOpen]);
+  useEffect(() => { isAnySheetOpenRef.current = isAddOpen || isTrendOpen; }, [isAddOpen, isTrendOpen]);
   useEffect(() => { navigateRef.current = navigate; }, [navigate]);
 
   // Reset transform when the route changes (new page rendered after navigation)
@@ -125,14 +139,24 @@ export function MainLayout() {
     };
   }, []); // Empty deps — changing values accessed via refs
 
-  const showGestureZone = location.pathname === '/' || location.pathname === '/stats' || location.pathname === '/accounts';
-  const gestureLabel = location.pathname === '/stats' ? 'View trend' : location.pathname === '/accounts' ? 'Add account' : 'Add transaction';
+  const showGestureZone = location.pathname === '/' || location.pathname === '/stats';
+  const gestureLabel = location.pathname === '/stats' ? 'View trend' : 'Add transaction';
 
-  const handleGestureAction = useCallback(() => {
-    if (location.pathname === '/') setIsAddOpen(true);
-    else if (location.pathname === '/stats') setIsTrendOpen(true);
-    else if (location.pathname === '/accounts') setIsAddAccountOpen(true);
-  }, [location.pathname]);
+  const handleGestureAction = useCallback(async () => {
+    if (location.pathname === '/') {
+      const [accounts, categories] = await Promise.all([
+        paymentMethodsService.getAll(),
+        categoriesService.getAll(),
+      ]);
+      if (accounts.length === 0 || categories.length === 0) {
+        showToast('Please create an account and a category first', 'info');
+        return;
+      }
+      setIsAddOpen(true);
+    } else if (location.pathname === '/stats') {
+      setIsTrendOpen(true);
+    }
+  }, [location.pathname, showToast]);
 
   return (
     <div ref={shellRef} className={styles.shell}>
@@ -144,8 +168,11 @@ export function MainLayout() {
         <GestureZone label={gestureLabel} onAction={handleGestureAction} />
       )}
 
-      <AddSheet isOpen={isAddOpen} onClose={() => setIsAddOpen(false)} />
-      <AddAccountSheet isOpen={isAddAccountOpen} onClose={() => setIsAddAccountOpen(false)} />
+      <AddSheet
+        isOpen={isAddOpen}
+        onClose={() => { setIsAddOpen(false); setEditingEntry(undefined); }}
+        entry={editingEntry}
+      />
       <TrendSheet isOpen={isTrendOpen} onClose={() => setIsTrendOpen(false)} />
     </div>
   );

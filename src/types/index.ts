@@ -17,7 +17,7 @@ export type AppSettings = {
   monthStartDay: number;     // 1..28
 };
 
-export interface TPaymentMethod {
+export interface TAccount {
   id: UUID;
   name: string;
   type: PaymentMethodType;
@@ -56,6 +56,10 @@ export interface TEntry {
   date: ISODate;
   updatedAt: ISOTimestamp;
   synced: boolean;
+}
+
+export interface SubcategoryWithCategory extends TSubcategory {
+  categoryName: string;
 }
 
 export interface EntryDetail extends TEntry {

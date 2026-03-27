@@ -1,6 +1,6 @@
 // src/services/db/subcategoriesService.ts
 import { getDB } from '../../lib/sqlite';
-import type { TSubcategory, UUID } from '../../types';
+import type { TSubcategory, SubcategoryWithCategory, UUID } from '../../types';
 
 type CreateSubcategoryInput = { categoryId: UUID; name: string; };
 type UpdateSubcategoryInput = { name: string; };
@@ -80,5 +80,24 @@ export const subcategoriesService = {
     const db = getDB();
     const res = await db.query('SELECT COUNT(*) as count FROM entries WHERE subcategory_id = ?', [id]);
     return (res.values?.[0]?.count ?? 0) > 0;
+  },
+
+  getAllWithCategory: async (): Promise<SubcategoryWithCategory[]> => {
+    const db = getDB();
+    const res = await db.query(`
+      SELECT s.id, s.category_id, s.name, s.updated_at, s.synced,
+             c.name AS categoryName
+      FROM subcategories s
+      JOIN categories c ON c.id = s.category_id
+      ORDER BY c.name ASC, s.name ASC
+    `);
+    return (res.values || []).map(row => ({
+      id: row.id,
+      categoryId: row.category_id,
+      name: row.name,
+      updatedAt: row.updated_at,
+      synced: row.synced === 1,
+      categoryName: row.categoryName,
+    }));
   },
 };

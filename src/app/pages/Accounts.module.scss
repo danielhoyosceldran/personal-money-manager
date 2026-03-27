@@ -1,0 +1,162 @@
+@use '../../styles/variables' as *;
+
+.page {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 1.75rem 1.5rem 6rem;
+  overflow-y: auto;
+}
+
+.sectionTitle {
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: $muted;
+  margin-bottom: 1rem;
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.875rem 0;
+  border-bottom: 1px solid $fg2;
+
+  &:first-child { border-top: 1px solid $fg2; }
+}
+
+.rowLeft {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  min-width: 0;
+}
+
+.rowName {
+  font-size: 1rem;
+  font-weight: 500;
+  color: $fg;
+}
+
+.rowDesc {
+  font-size: 0.8125rem;
+  color: $muted;
+}
+
+.rowActions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-shrink: 0;
+  margin-left: 1rem;
+}
+
+.actionBtn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 0.8125rem;
+  font-family: inherit;
+  padding: 0;
+  color: $muted;
+  transition: color 0.15s;
+
+  &:active { opacity: 0.7; }
+}
+
+.deleteBtn { color: var(--danger); }
+
+.confirmGroup {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+}
+
+.confirmLabel {
+  font-size: 0.8125rem;
+  color: $muted;
+}
+
+.confirmYes {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 0.8125rem;
+  font-family: inherit;
+  padding: 0;
+  color: var(--danger);
+  font-weight: 600;
+}
+
+.confirmNo {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 0.8125rem;
+  font-family: inherit;
+  padding: 0;
+  color: $muted;
+}
+
+.empty {
+  color: $muted;
+  font-size: 0.9375rem;
+  padding: 1rem 0;
+}
+
+.section {
+  margin-top: 2.5rem;
+}
+
+.sectionHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  width: 100%;
+  margin-bottom: 1rem;
+}
+
+.sectionIndicator {
+  font-size: 0.75rem;
+  color: $muted;
+  transition: transform 0.2s ease;
+
+  &.open { transform: rotate(90deg); }
+}
+
+.addLink {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 0.8125rem;
+  font-family: inherit;
+  color: $muted;
+  padding: 0.75rem 0 0;
+  display: block;
+  transition: color 0.15s;
+
+  &:active { opacity: 0.7; }
+}
+
+.rowBadge {
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: $muted;
+  border: 1px solid $fg2;
+  border-radius: 9999px;
+  padding: 0.1rem 0.5rem;
+  flex-shrink: 0;
+}

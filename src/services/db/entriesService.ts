@@ -34,7 +34,7 @@ export const entriesService = {
       FROM entries e
       JOIN subcategories s ON s.id = e.subcategory_id
       JOIN categories c ON c.id = s.category_id
-      JOIN payment_methods pm ON pm.id = e.payment_method_id
+      JOIN accounts pm ON pm.id = e.payment_method_id
       WHERE e.date >= ? AND e.date < ?
     `;
     const params: any[] = [from, to];
@@ -62,7 +62,7 @@ export const entriesService = {
       FROM entries e
       JOIN subcategories s ON s.id = e.subcategory_id
       JOIN categories c ON c.id = s.category_id
-      JOIN payment_methods pm ON pm.id = e.payment_method_id
+      JOIN accounts pm ON pm.id = e.payment_method_id
       WHERE e.id = ?
     `;
     const res = await db.query(query, [id]);

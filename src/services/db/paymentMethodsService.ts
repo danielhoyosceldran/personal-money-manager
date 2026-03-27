@@ -1,6 +1,6 @@
 // src/services/db/paymentMethodsService.ts
 import { getDB } from '../../lib/sqlite';
-import type { TPaymentMethod, PaymentMethodType, UUID } from '../../types';
+import type { TAccount, PaymentMethodType, UUID } from '../../types';
 
 type CreatePaymentMethodInput = {
   name: string;
@@ -13,34 +13,34 @@ type CreatePaymentMethodInput = {
 type UpdatePaymentMethodInput = Partial<CreatePaymentMethodInput>;
 
 export const paymentMethodsService = {
-  getAll: async (): Promise<TPaymentMethod[]> => {
+  getAll: async (): Promise<TAccount[]> => {
     const db = getDB();
-    const res = await db.query('SELECT * FROM payment_methods ORDER BY name ASC');
+    const res = await db.query('SELECT * FROM accounts ORDER BY name ASC');
     return (res.values || []).map(row => ({
       ...row,
       synced: row.synced === 1
     }));
   },
 
-  getById: async (id: UUID): Promise<TPaymentMethod | null> => {
+  getById: async (id: UUID): Promise<TAccount | null> => {
     const db = getDB();
-    const res = await db.query('SELECT * FROM payment_methods WHERE id = ?', [id]);
+    const res = await db.query('SELECT * FROM accounts WHERE id = ?', [id]);
     if (!res.values || res.values.length === 0) return null;
     const row = res.values[0];
     return { ...row, synced: row.synced === 1 };
   },
 
-  create: async (input: CreatePaymentMethodInput): Promise<TPaymentMethod> => {
+  create: async (input: CreatePaymentMethodInput): Promise<TAccount> => {
     const db = getDB();
     const id = crypto.randomUUID();
     await db.run(
-      'INSERT INTO payment_methods (id, name, type, icon, color, description, synced) VALUES (?, ?, ?, ?, ?, ?, 0)',
+      'INSERT INTO accounts (id, name, type, icon, color, description, synced) VALUES (?, ?, ?, ?, ?, ?, 0)',
       [id, input.name, input.type, input.icon, input.color, input.description ?? '']
     );
     return (await paymentMethodsService.getById(id))!;
   },
 
-  update: async (id: UUID, input: UpdatePaymentMethodInput): Promise<TPaymentMethod> => {
+  update: async (id: UUID, input: UpdatePaymentMethodInput): Promise<TAccount> => {
     const db = getDB();
     const current = await paymentMethodsService.getById(id);
     if (!current) throw new Error('Payment method not found');
@@ -49,10 +49,11 @@ export const paymentMethodsService = {
     const type = input.type ?? current.type;
     const icon = input.icon ?? current.icon;
     const color = input.color ?? current.color;
+    const description = input.description ?? current.description;
 
     await db.run(
-      'UPDATE payment_methods SET name = ?, type = ?, icon = ?, color = ?, synced = 0 WHERE id = ?',
-      [name, type, icon, color, id]
+      'UPDATE accounts SET name = ?, type = ?, icon = ?, color = ?, description = ?, synced = 0 WHERE id = ?',
+      [name, type, icon, color, description, id]
     );
     return (await paymentMethodsService.getById(id))!;
   },
@@ -64,12 +65,12 @@ export const paymentMethodsService = {
       // Enforced by FK RESTRICT, but explicitly handled here for clear errors
       throw new Error('Cannot delete payment method with associated entries.');
     }
-    await db.run('DELETE FROM payment_methods WHERE id = ?', [id]);
+    await db.run('DELETE FROM accounts WHERE id = ?', [id]);
   },
 
-  getUnsynced: async (): Promise<TPaymentMethod[]> => {
+  getUnsynced: async (): Promise<TAccount[]> => {
     const db = getDB();
-    const res = await db.query('SELECT * FROM payment_methods WHERE synced = 0');
+    const res = await db.query('SELECT * FROM accounts WHERE synced = 0');
     return (res.values || []).map(row => ({ ...row, synced: false }));
   },
 
@@ -77,7 +78,7 @@ export const paymentMethodsService = {
     if (ids.length === 0) return;
     const db = getDB();
     const placeholders = ids.map(() => '?').join(',');
-    await db.run(`UPDATE payment_methods SET synced = 1 WHERE id IN (${placeholders})`, ids);
+    await db.run(`UPDATE accounts SET synced = 1 WHERE id IN (${placeholders})`, ids);
   },
 
   hasEntries: async (id: UUID): Promise<boolean> => {

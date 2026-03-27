@@ -103,8 +103,64 @@
   &[type="datetime-local"] { color: $muted; }
 }
 
+.sheetTitle {
+  font-size: 1rem;
+  font-weight: 700;
+  color: $fg;
+}
+
+.typeRow {
+  display: flex;
+  gap: 1.5rem;
+  padding: 1rem 0;
+  border-bottom: 1px solid $fg2;
+}
+
+.deleteArea {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+}
+
+.deleteBtn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 0.9375rem;
+  color: var(--danger, #ef4444);
+  padding: 0;
+  font-family: inherit;
+}
+
+.deleteConfirmLabel {
+  font-size: 0.9375rem;
+  color: $muted;
+}
+
+.deleteConfirmYes {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 0.9375rem;
+  color: var(--danger, #ef4444);
+  font-weight: 600;
+  padding: 0;
+  font-family: inherit;
+}
+
+.deleteConfirmNo {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 0.9375rem;
+  color: $muted;
+  padding: 0;
+  font-family: inherit;
+}
+
 .saveBtn {
-  margin-top: 2rem;
+  margin-top: 1.5rem;
   background: $fg;
   color: $bg;
   padding: 1rem;

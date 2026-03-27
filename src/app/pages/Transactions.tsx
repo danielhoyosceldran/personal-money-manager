@@ -1,12 +1,15 @@
 import { useState, useMemo, useEffect } from 'react';
 import { useEntries } from '../../hooks/useEntries';
+import { useSettings } from '../../hooks/useSettings';
 import { currentMonth, centsToDisplay, formatDate } from '../../utils/formatters';
-import type { EntryDetail } from '../../types';
+import type { Currency, EntryDetail } from '../../types';
 import styles from './Transactions.module.scss';
 
 export function Transactions() {
   const [month] = useState(() => currentMonth());
   const { entries, balance, loading, reloadEntries } = useEntries(month);
+  const { settings } = useSettings();
+  const currency = (settings.currency ?? 'EUR') as Currency;
 
   useEffect(() => {
     const handler = () => void reloadEntries();
@@ -27,10 +30,10 @@ export function Transactions() {
   return (
     <div className={`${styles.page} animate-in fade-in duration-300`}>
       <div className={styles.balance}>
-        <h1 className={styles.balanceAmount}>{centsToDisplay(balance.net)}</h1>
+        <h1 className={styles.balanceAmount}>{centsToDisplay(balance.net, currency)}</h1>
         <div className={styles.balanceRange}>
-          <span>+{centsToDisplay(balance.totalIncome)}</span>
-          <span>-{centsToDisplay(balance.totalExpense)}</span>
+          <span>+{centsToDisplay(balance.totalIncome, currency)}</span>
+          <span>-{centsToDisplay(balance.totalExpense, currency)}</span>
         </div>
       </div>
 
@@ -46,13 +49,18 @@ export function Transactions() {
             <h2 className={styles.groupDate}>{formatDate(date)}</h2>
             <div className={styles.groupItems}>
               {items.map((item) => (
-                <div key={item.id} className={styles.transaction}>
+                <div
+                  key={item.id}
+                  className={styles.transaction}
+                  style={{ cursor: 'pointer' }}
+                  onClick={() => window.dispatchEvent(new CustomEvent('open-edit-transaction', { detail: item }))}
+                >
                   <div className={styles.transactionInfo}>
                     <span className={styles.transactionTitle}>{item.description || item.subcategoryName}</span>
                     <span className={styles.transactionCategory}>{item.categoryName} / {item.subcategoryName}</span>
                   </div>
                   <span className={styles.transactionAmount}>
-                    {item.type === 'expense' ? '-' : '+'}{centsToDisplay(item.amount)}
+                    {item.type === 'expense' ? '-' : '+'}{centsToDisplay(item.amount, currency)}
                   </span>
                 </div>
               ))}

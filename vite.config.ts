@@ -1,7 +1,10 @@
 import { defineConfig } from 'vite'
+import { readFileSync } from 'fs'
 import path from 'path'
 import tailwindcss from '@tailwindcss/vite'
 import react from '@vitejs/plugin-react'
+
+const { version } = JSON.parse(readFileSync('./package.json', 'utf-8')) as { version: string };
 
 export default defineConfig({
   plugins: [
@@ -19,4 +22,8 @@ export default defineConfig({
 
   // File types to support raw imports. Never add .css, .tsx, or .ts files to this.
   assetsInclude: ['**/*.svg', '**/*.csv'],
+
+  define: {
+    __APP_VERSION__: JSON.stringify(version),
+  },
 })

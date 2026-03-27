@@ -1,18 +1,19 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useCategories } from '../../hooks/useCategories';
 import { useSubcategories } from '../../hooks/useSubcategories';
 import { usePaymentMethods } from '../../hooks/usePaymentMethods';
 import { entriesService } from '../../services/db/entriesService';
 import { toCents } from '../../utils/formatters';
-import type { EntryType } from '../../types';
+import type { EntryDetail, EntryType } from '../../types';
 import styles from './AddSheet.module.scss';
 
 interface AddSheetProps {
   isOpen: boolean;
   onClose: () => void;
+  entry?: EntryDetail;
 }
 
-export function AddSheet({ isOpen, onClose }: AddSheetProps) {
+export function AddSheet({ isOpen, onClose, entry }: AddSheetProps) {
   const [type, setType] = useState<EntryType>('expense');
   const [amount, setAmount] = useState('');
   const [date, setDate] = useState(() => new Date().toISOString().split('T')[0]);
@@ -20,10 +21,43 @@ export function AddSheet({ isOpen, onClose }: AddSheetProps) {
   const [subcategoryId, setSubcategoryId] = useState('');
   const [paymentMethodId, setPaymentMethodId] = useState('');
   const [description, setDescription] = useState('');
+  const [confirmDelete, setConfirmDelete] = useState(false);
 
-  const { categories } = useCategories(type);
+  const { categories, reloadCategories } = useCategories(type);
   const { subcategories } = useSubcategories(categoryId || null);
-  const { paymentMethods } = usePaymentMethods();
+  const { paymentMethods, reloadPaymentMethods } = usePaymentMethods();
+
+  const reloadCategoriesRef = useRef(reloadCategories);
+  reloadCategoriesRef.current = reloadCategories;
+  const reloadPaymentMethodsRef = useRef(reloadPaymentMethods);
+  reloadPaymentMethodsRef.current = reloadPaymentMethods;
+  const entryRef = useRef(entry);
+  entryRef.current = entry;
+
+  useEffect(() => {
+    if (!isOpen) return;
+    setConfirmDelete(false);
+    void reloadCategoriesRef.current();
+    void reloadPaymentMethodsRef.current();
+    const e = entryRef.current;
+    if (e) {
+      setType(e.type);
+      setAmount((e.amount / 100).toFixed(2));
+      setDate(e.date);
+      setDescription(e.description ?? '');
+      setCategoryId(e.categoryId);
+      setSubcategoryId(e.subcategoryId);
+      setPaymentMethodId(e.paymentMethodId);
+    } else {
+      setType('expense');
+      setAmount('');
+      setDescription('');
+      setCategoryId('');
+      setSubcategoryId('');
+      setPaymentMethodId('');
+      setDate(new Date().toISOString().split('T')[0]);
+    }
+  }, [isOpen]);
 
   const handleTypeChange = (t: EntryType) => {
     setType(t);
@@ -39,22 +73,24 @@ export function AddSheet({ isOpen, onClose }: AddSheetProps) {
   const handleSave = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!subcategoryId || !paymentMethodId || !amount) return;
-    await entriesService.create({
-      type,
-      amount: toCents(parseFloat(amount)),
-      description,
-      subcategoryId,
-      paymentMethodId,
-      date,
-    });
+    const cents = toCents(parseFloat(amount));
+    if (entry) {
+      await entriesService.update(entry.id, { type, amount: cents, description, subcategoryId, paymentMethodId, date });
+    } else {
+      await entriesService.create({ type, amount: cents, description, subcategoryId, paymentMethodId, date });
+    }
     window.dispatchEvent(new CustomEvent('transaction-saved'));
-    setAmount('');
-    setDescription('');
-    setCategoryId('');
-    setSubcategoryId('');
-    setPaymentMethodId('');
     onClose();
   };
+
+  const handleDelete = async () => {
+    if (!entry) return;
+    await entriesService.remove(entry.id);
+    window.dispatchEvent(new CustomEvent('transaction-saved'));
+    onClose();
+  };
+
+  const isEdit = !!entry;
 
   return (
     <>
@@ -70,23 +106,48 @@ export function AddSheet({ isOpen, onClose }: AddSheetProps) {
           <form onSubmit={handleSave} className={styles.form}>
 
             <div className={styles.typeToggle}>
-              <button
-                type="button"
-                className={`${styles.typeBtn} ${type === 'income' ? styles.typeBtnActive : ''}`}
-                onClick={() => handleTypeChange('income')}
-              >
-                Income
-              </button>
-              <button
-                type="button"
-                className={`${styles.typeBtn} ${type === 'expense' ? styles.typeBtnActive : ''}`}
-                onClick={() => handleTypeChange('expense')}
-              >
-                Expense
-              </button>
+              {isEdit ? (
+                <span className={styles.sheetTitle}>Edit transaction</span>
+              ) : (
+                <>
+                  <button
+                    type="button"
+                    className={`${styles.typeBtn} ${type === 'income' ? styles.typeBtnActive : ''}`}
+                    onClick={() => handleTypeChange('income')}
+                  >
+                    Income
+                  </button>
+                  <button
+                    type="button"
+                    className={`${styles.typeBtn} ${type === 'expense' ? styles.typeBtnActive : ''}`}
+                    onClick={() => handleTypeChange('expense')}
+                  >
+                    Expense
+                  </button>
+                </>
+              )}
             </div>
 
             <div className={styles.fields}>
+              {isEdit && (
+                <div className={styles.typeRow}>
+                  <button
+                    type="button"
+                    className={`${styles.typeBtn} ${type === 'income' ? styles.typeBtnActive : ''}`}
+                    onClick={() => handleTypeChange('income')}
+                  >
+                    Income
+                  </button>
+                  <button
+                    type="button"
+                    className={`${styles.typeBtn} ${type === 'expense' ? styles.typeBtnActive : ''}`}
+                    onClick={() => handleTypeChange('expense')}
+                  >
+                    Expense
+                  </button>
+                </div>
+              )}
+
               <input
                 type="date"
                 value={date}
@@ -102,7 +163,7 @@ export function AddSheet({ isOpen, onClose }: AddSheetProps) {
                 onChange={(e) => setAmount(e.target.value)}
                 required
                 className={styles.field}
-                autoFocus={isOpen}
+                autoFocus={isOpen && !isEdit}
               />
               <select
                 value={categoryId}
@@ -147,7 +208,25 @@ export function AddSheet({ isOpen, onClose }: AddSheetProps) {
               />
             </div>
 
-            <button type="submit" className={styles.saveBtn}>Save</button>
+            {isEdit && (
+              <div className={styles.deleteArea}>
+                {confirmDelete ? (
+                  <>
+                    <span className={styles.deleteConfirmLabel}>Sure?</span>
+                    <button type="button" className={styles.deleteConfirmYes} onClick={() => void handleDelete()}>Yes</button>
+                    <button type="button" className={styles.deleteConfirmNo} onClick={() => setConfirmDelete(false)}>No</button>
+                  </>
+                ) : (
+                  <button type="button" className={styles.deleteBtn} onClick={() => setConfirmDelete(true)}>
+                    Delete
+                  </button>
+                )}
+              </div>
+            )}
+
+            <button type="submit" className={styles.saveBtn}>
+              {isEdit ? 'Update' : 'Save'}
+            </button>
           </form>
         </div>
       </div>

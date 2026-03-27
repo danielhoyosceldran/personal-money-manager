@@ -34,7 +34,7 @@ export const currentYear = (): YearKey => {
   return String(new Date().getFullYear());
 };
 
-export const monthLabel = (month: MonthKey, locale: string = 'es-ES'): string => {
+export const monthLabel = (month: MonthKey, locale: string = 'en-US'): string => {
   const [year, monthNum] = month.split('-');
   const date = new Date(Number(year), Number(monthNum) - 1, 1);
   const monthName = new Intl.DateTimeFormat(locale, { month: 'long' }).format(date);
@@ -55,6 +55,17 @@ export const lastNMonths = (n: number): MonthKey[] => {
       month = 12;
       year--;
     }
+  }
+  return result;
+};
+
+export const monthsUpToCurrent = (): MonthKey[] => {
+  const now = new Date();
+  const year = now.getFullYear();
+  const currentMonthNum = now.getMonth() + 1;
+  const result: MonthKey[] = [];
+  for (let m = 1; m <= currentMonthNum; m++) {
+    result.push(`${year}-${String(m).padStart(2, '0')}`);
   }
   return result;
 };
